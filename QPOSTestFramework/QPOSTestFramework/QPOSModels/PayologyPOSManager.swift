@@ -95,7 +95,7 @@ extension PayologyPOSManager: PayologyPOSBluetoothFinderDelegate {
     }
     
     public func didStopScanning(hasFoundDevice: Bool) {
-        print(#line, #function)
+        print(#line, #function, hasFoundDevice)
         guard !hasConnectedDevice else { return }
         bluetoothStatus = hasFoundDevice ? .scanDidFoundDevice : .scanDidNotFoundDevice
     }
@@ -204,6 +204,7 @@ extension PayologyPOSManager {
 
         if result == .ICC {
             tradeStatus = .didCompleteInsertTrade
+            POSInstance?.doEmvApp(EmvOption.START)
             return
             
         } else if result == .NFC_ONLINE, let dictionary = decodeData as? [String : String] {
@@ -225,8 +226,50 @@ extension PayologyPOSManager {
             tradeStatus = .tradeDidFail
             return
         }
-        
+        POSInstance?.sendOnlineProcessResult("8A023030")
         tradeStatus = .didCompleteInsertTrade
+    }
+    
+    public func onRequestBatchData(_ tlv: String!) {
+        print(#line, #function)
+        print("TLV", tlv)
+    }
+    
+    public func onRequest(_ transactionResult: TransactionResult) {
+        print(#line, #function)
+        var tranResult="";
+        if transactionResult == TransactionResult.APPROVED {
+            tranResult = "TransactionResult.APPROVED";
+        }else if transactionResult == TransactionResult.TERMINATED{
+            tranResult = "TransactionResult.TERMINATED";
+        }else if transactionResult == TransactionResult.DECLINED{
+            tranResult = "TransactionResult.DECLINED";
+        }else if transactionResult == TransactionResult.CANCEL{
+            tranResult = "TransactionResult.CANCEL";
+        }else if transactionResult == TransactionResult.CAPK_FAIL{
+            tranResult = "TransactionResult.CAPK_FAIL";
+        }else if transactionResult == TransactionResult.NOT_ICC{
+            tranResult = "TransactionResult.NOT_ICC";
+        }else if transactionResult == TransactionResult.SELECT_APP_FAIL{
+            tranResult = "TransactionResult.SELECT_APP_FAIL";
+        }else if transactionResult == TransactionResult.DEVICE_ERROR{
+            tranResult = "TransactionResult.DEVICE_ERROR";
+        }else if transactionResult == TransactionResult.CARD_NOT_SUPPORTED{
+            tranResult = "TransactionResult.CARD_NOT_SUPPORTED";
+        }else if transactionResult == TransactionResult.MISSING_MANDATORY_DATA{
+            tranResult = "TransactionResult.MISSING_MANDATORY_DATA";
+        }else if transactionResult == TransactionResult.CARD_BLOCKED_OR_NO_EMV_APPS{
+            tranResult = "TransactionResult.CARD_BLOCKED_OR_NO_EMV_APPS";
+        }else if transactionResult == TransactionResult.INVALID_ICC_DATA{
+            tranResult = "TransactionResult.INVALID_ICC_DATA";
+        }else if transactionResult == TransactionResult.FALLBACK{
+            tranResult = "TransactionResult.FALLBACK";
+        }else if transactionResult == TransactionResult.NFC_TERMINATED{
+            tranResult = "TransactionResult.NFC_TERMINATED";
+        }else if transactionResult == TransactionResult.TRADE_LOG_FULL{
+            tranResult = "TransactionResult.TRADE_LOG_FULL";
+        }
+        print(tranResult);
     }
 }
 

@@ -58,6 +58,8 @@ extension PayologyPOSBluetoothFinder {
 extension PayologyPOSBluetoothFinder {
     
     public func onBluetoothName2Mode(_ bluetoothName: String!) {
+        print(#line, bluetoothName)
+        
         guard
             let bluetoothName,
             isPOSDeviceName(bluetoothName)
